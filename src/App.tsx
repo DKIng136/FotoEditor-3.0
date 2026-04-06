@@ -87,9 +87,6 @@ export default function App() {
   const [imageInfo, setImageInfo] = useState<{ width: number; height: number; name: string } | null>(null);
   const [projectName, setProjectName] = useState<string>("Dự_án_chưa_đặt_tên");
   const [isEditingName, setIsEditingName] = useState(false);
-  const [exportFormat, setExportFormat] = useState<'image/png' | 'image/jpeg' | 'image/webp'>('image/png');
-  const [exportQuality, setExportQuality] = useState(0.9);
-  const [showExportMenu, setShowExportMenu] = useState(false);
 
   // Crop State
   const [isCropMode, setIsCropMode] = useState(false);
@@ -427,12 +424,10 @@ export default function App() {
     }
 
     const link = document.createElement('a');
-    const extension = exportFormat.split('/')[1];
-    link.download = `${projectName.split('.')[0]}_edited.${extension}`;
-    link.href = canvas.toDataURL(exportFormat, exportQuality);
+    link.download = `chinh-sua-anh-${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png', 1.0);
     link.click();
     setIsProcessing(false);
-    setShowExportMenu(false);
   };
 
   const filterStyle = showOriginal ? {} : {
@@ -629,85 +624,18 @@ export default function App() {
                 >
                   <Upload size={16} />
                 </button>
-                
-                <div className="relative">
-                  <button
-                    onClick={() => setShowExportMenu(!showExportMenu)}
-                    disabled={isProcessing}
-                    className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-xs font-black rounded-full transition-all active:scale-95 disabled:opacity-50 shadow-xl shadow-purple-900/20 border border-white/10"
-                  >
-                    {isProcessing ? (
-                      <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                    ) : (
-                      <Download size={14} />
-                    )}
-                    XUẤT FILE
-                  </button>
-
-                  <AnimatePresence>
-                    {showExportMenu && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute right-0 mt-3 w-64 bg-[#141417] border border-[#27272A] rounded-2xl shadow-2xl p-4 z-50 backdrop-blur-xl"
-                      >
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <h4 className="text-[10px] font-black uppercase tracking-widest text-[#52525B]">Cấu hình xuất file</h4>
-                            <button onClick={() => setShowExportMenu(false)} className="text-[#52525B] hover:text-white">
-                              <X size={14} />
-                            </button>
-                          </div>
-
-                          <div className="space-y-2">
-                            <label className="text-[9px] font-bold uppercase tracking-wider text-[#71717A]">Định dạng</label>
-                            <div className="grid grid-cols-3 gap-2">
-                              {(['image/png', 'image/jpeg', 'image/webp'] as const).map((fmt) => (
-                                <button
-                                  key={fmt}
-                                  onClick={() => setExportFormat(fmt)}
-                                  className={`py-2 rounded-lg text-[10px] font-bold uppercase transition-all border ${
-                                    exportFormat === fmt 
-                                      ? 'bg-purple-600/10 border-purple-500 text-purple-500' 
-                                      : 'bg-white/5 border-white/5 text-[#52525B] hover:text-[#A1A1AA]'
-                                  }`}
-                                >
-                                  {fmt.split('/')[1]}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-
-                          {(exportFormat === 'image/jpeg' || exportFormat === 'image/webp') && (
-                            <div className="space-y-2">
-                              <div className="flex justify-between items-center">
-                                <label className="text-[9px] font-bold uppercase tracking-wider text-[#71717A]">Chất lượng</label>
-                                <span className="text-[10px] font-mono font-bold text-purple-500">{Math.round(exportQuality * 100)}%</span>
-                              </div>
-                              <input
-                                type="range"
-                                min="0.1"
-                                max="1"
-                                step="0.05"
-                                value={exportQuality}
-                                onChange={(e) => setExportQuality(parseFloat(e.target.value))}
-                                className="w-full h-1 bg-white/5 rounded-full appearance-none cursor-pointer accent-purple-500"
-                              />
-                            </div>
-                          )}
-
-                          <button
-                            onClick={downloadImage}
-                            className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-all shadow-lg shadow-purple-900/20"
-                          >
-                            Tải xuống ngay
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                <button
+                  onClick={downloadImage}
+                  disabled={isProcessing}
+                  className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-xs font-black rounded-full transition-all active:scale-95 disabled:opacity-50 shadow-xl shadow-purple-900/20 border border-white/10"
+                >
+                  {isProcessing ? (
+                    <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <Download size={14} />
+                  )}
+                  XUẤT FILE
+                </button>
               </>
             )}
           </div>
